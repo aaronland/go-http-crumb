@@ -1,0 +1,7 @@
+# github.com/aaronland/go-http-rewrite v0.0.1
+github.com/aaronland/go-http-rewrite
+# github.com/aaronland/go-string v0.1.0
+github.com/aaronland/go-string/random
+# golang.org/x/net v0.0.0-20190613194153-d28f0bde5980
+golang.org/x/net/html
+golang.org/x/net/html/atom
