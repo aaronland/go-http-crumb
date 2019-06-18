@@ -8,7 +8,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/aaronland/go-string/random"
+	"github.com/aaronland/go-string/dsn"
+	_ "github.com/aaronland/go-string/random"
 	"io"
 	_ "log"
 	go_http "net/http"
@@ -17,6 +18,7 @@ import (
 	"time"
 )
 
+/*
 var sep string
 var secret string
 var extra string
@@ -44,6 +46,8 @@ type Crumb interface {
 	Base(*go_http.Request, ...string) (string, error)
 }
 
+*/
+
 type CrumbConfig struct {
 	Extra     string
 	Separator string
@@ -51,19 +55,52 @@ type CrumbConfig struct {
 	TTL       int64
 }
 
-func DefaultCrumbConfig() CrumbConfig {
+func NewCrumbConfigFromDSN(crumb_dsn string) (*CrumbConfig, error) {
 
-	cfg := CrumbConfig{
-		Extra:     extra,
-		Separator: sep,
-		Secret:    secret,
-		TTL:       0,
+	dsn_map, err := dsn.StringToDSNWithKeys(crumb_dsn, "extra", "separator", "secret", "ttl")
+
+	if err != nil {
+		return nil, err
 	}
 
-	return cfg
+	extra := strings.TrimSpace(dsn_map["extra"])
+	separator := strings.TrimSpace(dsn_map["separator"])
+	secret := strings.TrimSpace(dsn_map["secret"])
+	str_ttl := strings.TrimSpace(dsn_map["ttl"])
+
+	if extra == "" {
+		return nil, errors.New("Empty extra= key")
+	}
+
+	if separator == "" {
+		return nil, errors.New("Empty separator= key")
+	}
+
+	if secret == "" {
+		return nil, errors.New("Empty secret= key")
+	}
+
+	if str_ttl == "" {
+		return nil, errors.New("Empty ttl= key")
+	}
+
+	ttl, err := strconv.ParseInt(str_ttl, 10, 64)
+
+	if err != nil {
+		return nil, err
+	}
+
+	cfg := &CrumbConfig{
+		Extra:     extra,
+		Separator: separator,
+		Secret:    secret,
+		TTL:       ttl,
+	}
+
+	return cfg, nil
 }
 
-func GenerateCrumb(cfg CrumbConfig, req *go_http.Request, extra ...string) (string, error) {
+func GenerateCrumb(cfg *CrumbConfig, req *go_http.Request, extra ...string) (string, error) {
 
 	crumb_base, err := CrumbBase(cfg, req, extra...)
 
@@ -98,7 +135,7 @@ func GenerateCrumb(cfg CrumbConfig, req *go_http.Request, extra ...string) (stri
 	return enc_var, nil
 }
 
-func ValidateCrumb(cfg CrumbConfig, req *go_http.Request, enc_var string, extra ...string) (bool, error) {
+func ValidateCrumb(cfg *CrumbConfig, req *go_http.Request, enc_var string, extra ...string) (bool, error) {
 
 	crumb_var, err := DecryptCrumb(cfg, enc_var)
 
@@ -156,11 +193,11 @@ func ValidateCrumb(cfg CrumbConfig, req *go_http.Request, enc_var string, extra 
 	return true, nil
 }
 
-func CrumbKey(cfg CrumbConfig, req *go_http.Request) string {
+func CrumbKey(cfg *CrumbConfig, req *go_http.Request) string {
 	return req.URL.Path
 }
 
-func CrumbBase(cfg CrumbConfig, req *go_http.Request, extra ...string) (string, error) {
+func CrumbBase(cfg *CrumbConfig, req *go_http.Request, extra ...string) (string, error) {
 
 	crumb_key := CrumbKey(cfg, req)
 
@@ -188,7 +225,7 @@ func CompareHashes(this_enc string, that_enc string) (bool, error) {
 	return match, nil
 }
 
-func HashCrumb(cfg CrumbConfig, raw string) (string, error) {
+func HashCrumb(cfg *CrumbConfig, raw string) (string, error) {
 
 	msg := []byte(raw)
 
@@ -203,7 +240,7 @@ func HashCrumb(cfg CrumbConfig, raw string) (string, error) {
 // https://gist.github.com/manishtpatel/8222606
 // https://github.com/blaskovicz/go-cryptkeeper/blob/master/encrypted_string.go
 
-func EncryptCrumb(cfg CrumbConfig, text string) (string, error) {
+func EncryptCrumb(cfg *CrumbConfig, text string) (string, error) {
 
 	plaintext := []byte(text)
 	secret := []byte(cfg.Secret)
@@ -227,7 +264,7 @@ func EncryptCrumb(cfg CrumbConfig, text string) (string, error) {
 	return hex.EncodeToString(ciphertext), nil
 }
 
-func DecryptCrumb(cfg CrumbConfig, enc_crumb string) (string, error) {
+func DecryptCrumb(cfg *CrumbConfig, enc_crumb string) (string, error) {
 
 	ciphertext, err := hex.DecodeString(enc_crumb)
 

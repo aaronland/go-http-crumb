@@ -9,7 +9,7 @@ import (
 	go_http "net/http"
 )
 
-func EnsureCrumbHandler(cfg CrumbConfig, other go_http.Handler) go_http.Handler {
+func EnsureCrumbHandler(cfg *CrumbConfig, other go_http.Handler) go_http.Handler {
 
 	fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
 
@@ -35,12 +35,12 @@ func EnsureCrumbHandler(cfg CrumbConfig, other go_http.Handler) go_http.Handler 
 			// while I figure out where to put the params stuff
 
 			/*
-			crumb_var, err := params.PostString(req, "crumb")
+				crumb_var, err := params.PostString(req, "crumb")
 
-			if err != nil {
-				go_http.Error(rsp, err.Error(), go_http.StatusBadRequest)
-				return
-			}
+				if err != nil {
+					go_http.Error(rsp, err.Error(), go_http.StatusBadRequest)
+					return
+				}
 			*/
 
 			crumb_var := req.PostFormValue("crumb")
