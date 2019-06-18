@@ -2,6 +2,7 @@ package crumb
 
 import (
 	"github.com/aaronland/go-http-rewrite"
+	"github.com/aaronland/go-http-sanitize"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 	"io"
@@ -31,19 +32,12 @@ func EnsureCrumbHandler(cfg *CrumbConfig, other go_http.Handler) go_http.Handler
 
 		case "POST":
 
-			// FIX ME.. this is just happening so we can compile
-			// while I figure out where to put the params stuff
+			crumb_var, err := sanitize.PostString(req, "crumb")
 
-			/*
-				crumb_var, err := params.PostString(req, "crumb")
-
-				if err != nil {
-					go_http.Error(rsp, err.Error(), go_http.StatusBadRequest)
-					return
-				}
-			*/
-
-			crumb_var := req.PostFormValue("crumb")
+			if err != nil {
+				go_http.Error(rsp, err.Error(), go_http.StatusBadRequest)
+				return
+			}
 
 			ok, err := ValidateCrumb(cfg, req, crumb_var)
 
