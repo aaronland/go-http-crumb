@@ -1,6 +1,7 @@
 package crumb
 
 import (
+	"errors"
 	"github.com/aaronland/go-http-rewrite"
 	"github.com/aaronland/go-http-sanitize"
 	"golang.org/x/net/html"
@@ -10,7 +11,30 @@ import (
 	go_http "net/http"
 )
 
-func EnsureCrumbHandler(cfg *CrumbConfig, other go_http.Handler) go_http.Handler {
+type ErrorHandlerFunc func(go_http.ResponseWriter, *go_http.Request, error, int) go_http.Handler
+
+func DefaultErrorHandlerFunc() ErrorHandlerFunc {
+
+	fn := func(rsp go_http.ResponseWriter, req *go_http.Request, err error, http_status int) go_http.Handler {
+
+		handler_fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
+			go_http.Error(rsp, err.Error(), http_status)
+			return
+		}
+
+		return go_http.HandlerFunc(handler_fn)
+	}
+
+	return fn
+}
+
+func EnsureCrumbHandler(cfg *CrumbConfig, next_handler go_http.Handler) go_http.Handler {
+
+	err_handler := DefaultErrorHandlerFunc()
+	return EnsureCrumbHandlerWithErrorHandler(cfg, next_handler, err_handler)
+}
+
+func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.Handler, error_handler_func ErrorHandlerFunc) go_http.Handler {
 
 	fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
 
@@ -21,12 +45,13 @@ func EnsureCrumbHandler(cfg *CrumbConfig, other go_http.Handler) go_http.Handler
 			crumb_var, err := GenerateCrumb(cfg, req)
 
 			if err != nil {
-				go_http.Error(rsp, err.Error(), go_http.StatusInternalServerError)
+				err_handler := error_handler_func(rsp, req, err, go_http.StatusInternalServerError)
+				err_handler.ServeHTTP(rsp, req)
 				return
 			}
 
 			rewrite_func := NewCrumbRewriteFunc(crumb_var)
-			rewrite_handler := rewrite.RewriteHTMLHandler(other, rewrite_func)
+			rewrite_handler := rewrite.RewriteHTMLHandler(next_handler, rewrite_func)
 
 			rewrite_handler.ServeHTTP(rsp, req)
 
@@ -35,26 +60,29 @@ func EnsureCrumbHandler(cfg *CrumbConfig, other go_http.Handler) go_http.Handler
 			crumb_var, err := sanitize.PostString(req, "crumb")
 
 			if err != nil {
-				go_http.Error(rsp, err.Error(), go_http.StatusBadRequest)
+				err_handler := error_handler_func(rsp, req, err, go_http.StatusBadRequest)
+				err_handler.ServeHTTP(rsp, req)
 				return
 			}
 
 			ok, err := ValidateCrumb(cfg, req, crumb_var)
 
 			if err != nil {
-				go_http.Error(rsp, err.Error(), go_http.StatusInternalServerError)
+				err_handler := error_handler_func(rsp, req, err, go_http.StatusInternalServerError)
+				err_handler.ServeHTTP(rsp, req)
 				return
 			}
 
 			if !ok {
-				go_http.Error(rsp, "Forbidden", go_http.StatusForbidden)
+				err_handler := error_handler_func(rsp, req, errors.New("Forbidden"), go_http.StatusForbidden)
+				err_handler.ServeHTTP(rsp, req)
 				return
 			}
 
-			other.ServeHTTP(rsp, req)
+			next_handler.ServeHTTP(rsp, req)
 
 		default:
-			other.ServeHTTP(rsp, req)
+			next_handler.ServeHTTP(rsp, req)
 		}
 	}
 
