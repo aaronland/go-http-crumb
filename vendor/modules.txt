@@ -1,4 +1,4 @@
-# github.com/aaronland/go-http-rewrite v0.0.1
+# github.com/aaronland/go-http-rewrite v0.0.4
 github.com/aaronland/go-http-rewrite
 # github.com/aaronland/go-http-sanitize v0.0.1
 github.com/aaronland/go-http-sanitize
