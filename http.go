@@ -40,22 +40,11 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 
 		switch req.Method {
 
-		case "GET":
-
-			crumb_var, err := GenerateCrumb(cfg, req)
-
-			if err != nil {
-				err_handler := error_handler_func(rsp, req, err, go_http.StatusInternalServerError)
-				err_handler.ServeHTTP(rsp, req)
-				return
-			}
-
-			rewrite_func := NewCrumbRewriteFunc(crumb_var)
-			rewrite_handler := rewrite.RewriteHTMLHandler(next_handler, rewrite_func)
-
-			rewrite_handler.ServeHTTP(rsp, req)
-
 		case "POST":
+
+			// err_handler := error_handler_func(rsp, req, errors.New("TESTING"), go_http.StatusBadRequest)
+			// err_handler.ServeHTTP(rsp, req)
+			// return
 
 			crumb_var, err := sanitize.PostString(req, "crumb")
 
@@ -65,25 +54,40 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 				return
 			}
 
-			ok, err := ValidateCrumb(cfg, req, crumb_var)
+			if crumb_var != "" {
 
-			if err != nil {
-				err_handler := error_handler_func(rsp, req, err, go_http.StatusInternalServerError)
-				err_handler.ServeHTTP(rsp, req)
-				return
+				ok, err := ValidateCrumb(cfg, req, crumb_var)
+
+				if err != nil {
+					err_handler := error_handler_func(rsp, req, err, go_http.StatusInternalServerError)
+					err_handler.ServeHTTP(rsp, req)
+					return
+				}
+
+				if !ok {
+					err_handler := error_handler_func(rsp, req, errors.New("Forbidden"), go_http.StatusForbidden)
+					err_handler.ServeHTTP(rsp, req)
+					return
+				}
 			}
-
-			if !ok {
-				err_handler := error_handler_func(rsp, req, errors.New("Forbidden"), go_http.StatusForbidden)
-				err_handler.ServeHTTP(rsp, req)
-				return
-			}
-
-			next_handler.ServeHTTP(rsp, req)
 
 		default:
-			next_handler.ServeHTTP(rsp, req)
+			// pass
 		}
+
+		crumb_var, err := GenerateCrumb(cfg, req)
+
+		if err != nil {
+			err_handler := error_handler_func(rsp, req, err, go_http.StatusInternalServerError)
+			err_handler.ServeHTTP(rsp, req)
+			return
+		}
+
+		rewrite_func := NewCrumbRewriteFunc(crumb_var)
+		rewrite_handler := rewrite.RewriteHTMLHandler(next_handler, rewrite_func)
+
+		rewrite_handler.ServeHTTP(rsp, req)
+
 	}
 
 	return go_http.HandlerFunc(fn)
