@@ -74,6 +74,10 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 
 	fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
 
+		// currently we assume that crumb values will be passed around as POST
+		// vars but we may want to revisit that decision to allow for '?crumb='
+		// URLs (20190920/thisisaaronland)
+		
 		switch req.Method {
 
 		case "POST":
