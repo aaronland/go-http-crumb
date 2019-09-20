@@ -1,6 +1,7 @@
 package crumb
 
 import (
+	"context"
 	"errors"
 	"github.com/aaronland/go-http-rewrite"
 	"github.com/aaronland/go-http-sanitize"
@@ -11,30 +12,65 @@ import (
 	go_http "net/http"
 )
 
-type ErrorHandlerFunc func(go_http.ResponseWriter, *go_http.Request, error, int) go_http.Handler
+func SetErrorContextWithRequest(req *go_http.Request, err error, status_code int) *go_http.Request {
 
-func DefaultErrorHandlerFunc() ErrorHandlerFunc {
+	ctx := req.Context()
+	ctx = SetErrorContextWithContext(ctx, err, status_code)
+	return req.WithContext(ctx)
+}
 
-	fn := func(rsp go_http.ResponseWriter, req *go_http.Request, err error, http_status int) go_http.Handler {
+func SetErrorContextWithContext(ctx context.Context, err error, status_code int) context.Context {
 
-		handler_fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
-			go_http.Error(rsp, err.Error(), http_status)
-			return
-		}
+	ctx = context.WithValue(ctx, "Status", status_code)
+	ctx = context.WithValue(ctx, "Error", err)
+	return ctx
+}
 
-		return go_http.HandlerFunc(handler_fn)
+func GetErrorContextValuesWithContext(ctx context.Context) (error, int, error) {
+
+	crumb_err := ctx.Value("Error")
+
+	if crumb_err == nil {
+		return nil, 0, errors.New("Invalid crumb handler")
 	}
 
-	return fn
+	status_code := ctx.Value("Status")
+
+	if status_code == nil {
+		return nil, 0, errors.New("Invalid crumb handler")
+	}
+
+	return crumb_err.(error), status_code.(int), nil
+}
+
+func GetErrorContextValuesWithRequest(req *go_http.Request) (error, int, error) {
+	return GetErrorContextValuesWithContext(req.Context())
+}
+
+func DefaultErrorHandler() go_http.Handler {
+
+	handler_fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
+
+		crumb_err, status_code, err := GetErrorContextValuesWithRequest(req)
+
+		if err != nil {
+			go_http.Error(rsp, err.Error(), go_http.StatusInternalServerError)
+		}
+
+		go_http.Error(rsp, crumb_err.Error(), status_code)
+		return
+	}
+
+	return go_http.HandlerFunc(handler_fn)
 }
 
 func EnsureCrumbHandler(cfg *CrumbConfig, next_handler go_http.Handler) go_http.Handler {
 
-	err_handler := DefaultErrorHandlerFunc()
+	err_handler := DefaultErrorHandler()
 	return EnsureCrumbHandlerWithErrorHandler(cfg, next_handler, err_handler)
 }
 
-func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.Handler, error_handler_func ErrorHandlerFunc) go_http.Handler {
+func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.Handler, error_handler go_http.Handler) go_http.Handler {
 
 	fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
 
@@ -42,15 +78,11 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 
 		case "POST":
 
-			// err_handler := error_handler_func(rsp, req, errors.New("TESTING"), go_http.StatusBadRequest)
-			// err_handler.ServeHTTP(rsp, req)
-			// return
-
 			crumb_var, err := sanitize.PostString(req, "crumb")
 
 			if err != nil {
-				err_handler := error_handler_func(rsp, req, err, go_http.StatusBadRequest)
-				err_handler.ServeHTTP(rsp, req)
+				req = SetErrorContextWithRequest(req, err, go_http.StatusBadRequest)
+				error_handler.ServeHTTP(rsp, req)
 				return
 			}
 
@@ -59,14 +91,14 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 				ok, err := ValidateCrumb(cfg, req, crumb_var)
 
 				if err != nil {
-					err_handler := error_handler_func(rsp, req, err, go_http.StatusInternalServerError)
-					err_handler.ServeHTTP(rsp, req)
+					req = SetErrorContextWithRequest(req, err, go_http.StatusInternalServerError)
+					error_handler.ServeHTTP(rsp, req)
 					return
 				}
 
 				if !ok {
-					err_handler := error_handler_func(rsp, req, errors.New("Forbidden"), go_http.StatusForbidden)
-					err_handler.ServeHTTP(rsp, req)
+					req = SetErrorContextWithRequest(req, errors.New("Forbidden"), go_http.StatusForbidden)
+					error_handler.ServeHTTP(rsp, req)
 					return
 				}
 			}
@@ -78,8 +110,9 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 		crumb_var, err := GenerateCrumb(cfg, req)
 
 		if err != nil {
-			err_handler := error_handler_func(rsp, req, err, go_http.StatusInternalServerError)
-			err_handler.ServeHTTP(rsp, req)
+
+			req = SetErrorContextWithRequest(req, err, go_http.StatusInternalServerError)
+			error_handler.ServeHTTP(rsp, req)
 			return
 		}
 
