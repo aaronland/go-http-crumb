@@ -74,10 +74,6 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 
 	fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
 
-		// currently we assume that crumb values will be passed around as POST
-		// vars but we may want to revisit that decision to allow for '?crumb='
-		// URLs (20190920/thisisaaronland)
-		
 		switch req.Method {
 
 		case "POST":
@@ -90,21 +86,24 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 				return
 			}
 
-			if crumb_var != "" {
+			if crumb_var == "" {
+				req = SetErrorContextWithRequest(req, errors.New("Missing crumb"), go_http.StatusBadRequest)
+				error_handler.ServeHTTP(rsp, req)
+				return
+			}
 
-				ok, err := ValidateCrumb(cfg, req, crumb_var)
+			ok, err := ValidateCrumb(cfg, req, crumb_var)
 
-				if err != nil {
-					req = SetErrorContextWithRequest(req, err, go_http.StatusInternalServerError)
-					error_handler.ServeHTTP(rsp, req)
-					return
-				}
+			if err != nil {
+				req = SetErrorContextWithRequest(req, err, go_http.StatusInternalServerError)
+				error_handler.ServeHTTP(rsp, req)
+				return
+			}
 
-				if !ok {
-					req = SetErrorContextWithRequest(req, errors.New("Forbidden"), go_http.StatusForbidden)
-					error_handler.ServeHTTP(rsp, req)
-					return
-				}
+			if !ok {
+				req = SetErrorContextWithRequest(req, errors.New("Forbidden"), go_http.StatusForbidden)
+				error_handler.ServeHTTP(rsp, req)
+				return
 			}
 
 		default:
@@ -114,7 +113,6 @@ func EnsureCrumbHandlerWithErrorHandler(cfg *CrumbConfig, next_handler go_http.H
 		crumb_var, err := GenerateCrumb(cfg, req)
 
 		if err != nil {
-
 			req = SetErrorContextWithRequest(req, err, go_http.StatusInternalServerError)
 			error_handler.ServeHTTP(rsp, req)
 			return
