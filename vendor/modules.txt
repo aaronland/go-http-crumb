@@ -1,12 +1,11 @@
 # github.com/aaronland/go-http-rewrite v0.0.4
 github.com/aaronland/go-http-rewrite
-# github.com/aaronland/go-http-sanitize v0.0.1
+# github.com/aaronland/go-http-sanitize v0.0.4
 github.com/aaronland/go-http-sanitize
-# github.com/aaronland/go-string v0.1.0
-github.com/aaronland/go-string/dsn
-github.com/aaronland/go-string/random
+# github.com/aaronland/go-roster v0.0.1
+github.com/aaronland/go-roster
 # github.com/whosonfirst/go-sanitize v0.1.0
 github.com/whosonfirst/go-sanitize
-# golang.org/x/net v0.0.0-20190613194153-d28f0bde5980
+# golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 golang.org/x/net/html
 golang.org/x/net/html/atom
