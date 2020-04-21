@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/aaronland/go-string/random"
 	"io"
 	_ "log"
 	"net/http"
@@ -31,6 +32,35 @@ type EncryptedCrumb struct {
 	secret    string
 	ttl       int64
 	key       string
+}
+
+func NewRandomEncryptedCrumbURI(ctx context.Context, ttl int, key string) (string, error) {
+
+	r_opts := random.DefaultOptions()
+	r_opts.AlphaNumeric = true
+
+	s, err := random.String(r_opts)
+
+	if err != nil {
+		return "", err
+	}
+
+	r_opts.Length = 8
+	e, err := random.String(r_opts)
+
+	if err != nil {
+		return "", err
+	}
+
+	params := url.Values{}
+	params.Set("extra", e)
+	params.Set("separator", ":")
+	params.Set("secret", s)
+	params.Set("ttl", strconv.Itoa(ttl))
+	params.Set("key", key)
+
+	uri := fmt.Sprintf("encrypted://?%s", params.Encode())
+	return uri, nil
 }
 
 func NewEncryptedCrumb(ctx context.Context, uri string) (Crumb, error) {

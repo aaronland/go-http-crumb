@@ -8,28 +8,6 @@ import (
 	"strings"
 )
 
-/*
-var sep string
-var secret string
-var extra string
-
-func init() {
-
-	opts := random.DefaultOptions()
-	opts.Length = 32
-
-	var s string
-
-	s, _ = random.String(opts)
-	secret = s
-
-	s, _ = random.String(opts)
-	extra = s
-
-	sep = "\x00"
-}
-*/
-
 type Crumb interface {
 	Generate(*http.Request, ...string) (string, error)
 	Validate(*http.Request, string, ...string) (bool, error)
