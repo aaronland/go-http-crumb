@@ -1,6 +1,6 @@
-# github.com/aaronland/go-http-rewrite v0.0.6
+# github.com/aaronland/go-http-rewrite v0.0.7
 github.com/aaronland/go-http-rewrite
-# github.com/aaronland/go-http-sanitize v0.0.4
+# github.com/aaronland/go-http-sanitize v0.0.6
 github.com/aaronland/go-http-sanitize
 # github.com/aaronland/go-roster v0.0.2
 github.com/aaronland/go-roster
@@ -8,6 +8,6 @@ github.com/aaronland/go-roster
 github.com/aaronland/go-string/random
 # github.com/whosonfirst/go-sanitize v0.1.0
 github.com/whosonfirst/go-sanitize
-# golang.org/x/net v0.0.0-20201002202402-0a1ea396d57c
+# golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 golang.org/x/net/html
 golang.org/x/net/html/atom
