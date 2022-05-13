@@ -10,7 +10,7 @@ github.com/aaronland/go-roster
 # github.com/aaronland/go-string v0.1.2
 ## explicit
 github.com/aaronland/go-string/random
-# github.com/sfomuseum/go-http-fault v1.0.0
+# github.com/sfomuseum/go-http-fault v1.0.1
 ## explicit
 github.com/sfomuseum/go-http-fault
 # github.com/whosonfirst/go-sanitize v0.1.0

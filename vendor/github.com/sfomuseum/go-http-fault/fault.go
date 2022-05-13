@@ -57,20 +57,20 @@ func RetrieveError(req *http.Request) (int, error) {
 }
 
 // FaultHandler returns a `http.Handler` instance for handling errors in a web application.
-func FaultHandler(l *log.Logger) (http.Handler, error) {
+func FaultHandler(l *log.Logger) http.Handler {
 	return faultHandler(l, nil)
 }
 
 // TemplatedFaultHandler returns a `http.Handler` instance for handling errors in a web application
 // with a custom HTML template.
-func TemplatedFaultHandler(l *log.Logger, t *template.Template) (http.Handler, error) {
+func TemplatedFaultHandler(l *log.Logger, t *template.Template) http.Handler {
 	return faultHandler(l, t)
 }
 
 // faultHandler returns a `http.Handler` for handling errors in a web application. It will retrieve
 // and "public" and "private" errors that have been recorded and log them to 'l'. If 't is defined it
 // will executed and passed the "public" error as a template variable.
-func faultHandler(l *log.Logger, t *template.Template) (http.Handler, error) {
+func faultHandler(l *log.Logger, t *template.Template) http.Handler {
 
 	fn := func(rsp http.ResponseWriter, req *http.Request) {
 
@@ -116,5 +116,5 @@ func faultHandler(l *log.Logger, t *template.Template) (http.Handler, error) {
 	}
 
 	h := http.HandlerFunc(fn)
-	return h, nil
+	return h
 }

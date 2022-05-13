@@ -6,8 +6,8 @@ github.com/aaronland/go-roster v1.0.0 h1:FRDGrTqsYySKjWnAhbBGXyeGlI/o5/t9FZYCbUm
 github.com/aaronland/go-roster v1.0.0/go.mod h1:KIsYZgrJlAsyb9LsXSCvlqvbcCBVjCSqcQiZx42i9ro=
 github.com/aaronland/go-string v0.1.2 h1:RSr/mQNbLgF37H0RV+nF7j2kILRRFkCmr8Jwq4lw92k=
 github.com/aaronland/go-string v0.1.2/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
-github.com/sfomuseum/go-http-fault v1.0.0 h1:lyX86FZC0zh/wfi0MNEsWtGEJZ1fX9nHtDSAGGeecQ0=
-github.com/sfomuseum/go-http-fault v1.0.0/go.mod h1:1kNjYh/1Cx1f3y+ltGdqQEodbTOz7i0Q0b+8dFW1OVw=
+github.com/sfomuseum/go-http-fault v1.0.1 h1:Xc3ZK86LTrLj/ocJxmfd0UogGDt8+uhQtajjvH1JL7E=
+github.com/sfomuseum/go-http-fault v1.0.1/go.mod h1:1kNjYh/1Cx1f3y+ltGdqQEodbTOz7i0Q0b+8dFW1OVw=
 github.com/whosonfirst/go-sanitize v0.1.0 h1:ygSqCnakwdzH/m8UEa15zXGDsoo5/JJeRkgmAjXZrBU=
 github.com/whosonfirst/go-sanitize v0.1.0/go.mod h1:p/emgbafMM0p5iVAz2XWwecYPl06Tw4Jos9rhTKIrt8=
 golang.org/x/net v0.0.0-20210525063256-abc453219eb5/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=

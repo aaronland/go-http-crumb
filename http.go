@@ -15,14 +15,10 @@ import (
 // EnsureCrumbHandler wraps 'next_handler' with a middleware `http.Handler` for assigning and validating
 // crumbs using the default `fomuseum/go-http-fault.FaultHandler` as an error handler. Any errors that
 // trigger the error handler can be retrieved using `sfomuseum/go-http-fault.RetrieveError()`.
-func EnsureCrumbHandler(cr Crumb, next_handler go_http.Handler) (go_http.Handler, error) {
+func EnsureCrumbHandler(cr Crumb, next_handler go_http.Handler) go_http.Handler {
 
 	logger := log.Default()
-	fault_handler, err := fault.FaultHandler(logger)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to create fault handler, %v", err)
-	}
+	fault_handler := fault.FaultHandler(logger)
 
 	return EnsureCrumbHandlerWithErrorHandler(cr, next_handler, fault_handler)
 }
@@ -30,7 +26,7 @@ func EnsureCrumbHandler(cr Crumb, next_handler go_http.Handler) (go_http.Handler
 // EnsureCrumbHandlerWithErrorHandler wraps 'next_handler' with a middleware a middleware `http.Handler` for
 // assigning and validating crumbs using a custom error handler. Any errors that trigger the error handler can
 // be retrieved using `sfomuseum/go-http-fault.RetrieveError()`.
-func EnsureCrumbHandlerWithErrorHandler(cr Crumb, next_handler go_http.Handler, error_handler go_http.Handler) (go_http.Handler, error) {
+func EnsureCrumbHandlerWithErrorHandler(cr Crumb, next_handler go_http.Handler, error_handler go_http.Handler) go_http.Handler {
 
 	fn := func(rsp go_http.ResponseWriter, req *go_http.Request) {
 
@@ -93,7 +89,7 @@ func EnsureCrumbHandlerWithErrorHandler(cr Crumb, next_handler go_http.Handler, 
 	}
 
 	h := go_http.HandlerFunc(fn)
-	return h, nil
+	return h
 }
 
 // NewCrumbRewriteFunc returns a `aaronland/go-http-rewrite.RewriteHTMLFunc` used to
