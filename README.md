@@ -96,19 +96,6 @@ func CrumbHandler() (http.Handler, error) {
 }
 ```
 
-## Interfaces
-
-## Crumb
-
-```
-type Crumb interface {
-	Generate(*http.Request, ...string) (string, error)
-	Validate(*http.Request, string, ...string) (bool, error)
-	Key(*http.Request) string
-	Base(*http.Request, ...string) (string, error)
-}
-```
-
 ## Schemes
 
 ### encrypted:///?secret={SECRET}&extra={EXTRA}&ttl={TTL}&separator={SEPARATOR}
