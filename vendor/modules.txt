@@ -4,7 +4,7 @@ github.com/aaronland/go-http-rewrite
 # github.com/aaronland/go-http-sanitize v0.0.6
 ## explicit
 github.com/aaronland/go-http-sanitize
-# github.com/aaronland/go-roster v0.0.2
+# github.com/aaronland/go-roster v1.0.0
 ## explicit
 github.com/aaronland/go-roster
 # github.com/aaronland/go-string v0.1.2
