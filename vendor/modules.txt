@@ -10,6 +10,9 @@ github.com/aaronland/go-roster
 # github.com/aaronland/go-string v0.1.2
 ## explicit
 github.com/aaronland/go-string/random
+# github.com/sfomuseum/go-http-fault v1.0.0
+## explicit
+github.com/sfomuseum/go-http-fault
 # github.com/whosonfirst/go-sanitize v0.1.0
 github.com/whosonfirst/go-sanitize
 # golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4

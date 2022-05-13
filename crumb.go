@@ -2,6 +2,7 @@ package crumb
 
 import (
 	"context"
+	"fmt"
 	"github.com/aaronland/go-roster"
 	"net/http"
 	"net/url"
@@ -33,7 +34,7 @@ func ensureCrumbs() error {
 		r, err := roster.NewDefaultRoster()
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to create new roster,%w", err)
 		}
 
 		crumbs = r
@@ -48,7 +49,7 @@ func RegisterCrumb(ctx context.Context, scheme string, f CrumbInitializeFunc) er
 	err := ensureCrumbs()
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to ensure crumbs, %w", err)
 	}
 
 	return crumbs.Register(ctx, scheme, f)
@@ -60,13 +61,13 @@ func NewCrumb(ctx context.Context, uri string) (Crumb, error) {
 	err := ensureCrumbs()
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to ensure crumbs, %w", err)
 	}
 
 	u, err := url.Parse(uri)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to parse URI, %w", err)
 	}
 
 	scheme := u.Scheme
@@ -74,7 +75,7 @@ func NewCrumb(ctx context.Context, uri string) (Crumb, error) {
 	i, err := crumbs.Driver(ctx, scheme)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive driver for %s, %w", scheme, err)
 	}
 
 	f := i.(CrumbInitializeFunc)
@@ -84,7 +85,14 @@ func NewCrumb(ctx context.Context, uri string) (Crumb, error) {
 // Schemes returns the list of schemes that have registered for use with the `NewCrumb` method.
 func Schemes() []string {
 	ctx := context.Background()
-	schemes := crumbs.Drivers(ctx)
+	drivers := crumbs.Drivers(ctx)
+
+	schemes := make([]string, len(drivers))
+
+	for idx, dr := range drivers {
+		schemes[idx] = fmt.Sprintf("%s://", dr)
+	}
+
 	sort.Strings(schemes)
 	return schemes
 }

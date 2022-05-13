@@ -34,21 +34,48 @@ type EncryptedCrumb struct {
 	key       string
 }
 
-// NewRandomEncryptedCrumbURI return a valid `aaronland/go-http-crumb` URI for an encrypted crumb
-// whose key is 'key' and whose time to live is 'ttl'.
-func NewRandomEncryptedCrumbURI(ctx context.Context, ttl int, key string) (string, error) {
+// NewRandomEncryptedCrumbSecret returns a random salt value suitable for `encrypted://` crumb URIs.
+func NewRandomEncryptedCrumbSecret() (string, error) {
 
 	r_opts := random.DefaultOptions()
 	r_opts.AlphaNumeric = true
 
-	s, err := random.String(r_opts)
+	secret, err := random.String(r_opts)
+
+	if err != nil {
+		return "", fmt.Errorf("Failed to generate secret, %w", err)
+	}
+
+	return secret, nil
+}
+
+// NewRandomEncryptedCrumbExtra returns a random extra value suitable for `encrypted://` crumb URIs.
+func NewRandomEncryptedCrumbExtra() (string, error) {
+
+	r_opts := random.DefaultOptions()
+	r_opts.Length = 8
+	r_opts.AlphaNumeric = true
+
+	extra, err := random.String(r_opts)
+
+	if err != nil {
+		return "", fmt.Errorf("Failed to generate extra, %w", err)
+	}
+
+	return extra, nil
+}
+
+// NewRandomEncryptedCrumbURI return a valid `aaronland/go-http-crumb` URI for an encrypted crumb
+// whose key is 'key' and whose time to live is 'ttl'.
+func NewRandomEncryptedCrumbURI(ctx context.Context, ttl int, key string) (string, error) {
+
+	s, err := NewRandomEncryptedCrumbSecret()
 
 	if err != nil {
 		return "", err
 	}
 
-	r_opts.Length = 8
-	e, err := random.String(r_opts)
+	e, err := NewRandomEncryptedCrumbExtra()
 
 	if err != nil {
 		return "", err
