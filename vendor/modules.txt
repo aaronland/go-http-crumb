@@ -1,21 +1,22 @@
-# github.com/aaronland/go-http-rewrite v1.0.0
-## explicit
+# github.com/aaronland/go-http-rewrite v1.0.1
+## explicit; go 1.18
 github.com/aaronland/go-http-rewrite
 # github.com/aaronland/go-http-sanitize v0.0.6
-## explicit
+## explicit; go 1.12
 github.com/aaronland/go-http-sanitize
 # github.com/aaronland/go-roster v1.0.0
-## explicit
+## explicit; go 1.16
 github.com/aaronland/go-roster
 # github.com/aaronland/go-string v1.0.0
-## explicit
+## explicit; go 1.16
 github.com/aaronland/go-string/random
-# github.com/sfomuseum/go-http-fault v1.0.1
-## explicit
-github.com/sfomuseum/go-http-fault
+# github.com/sfomuseum/go-http-fault/v2 v2.0.0
+## explicit; go 1.18
+github.com/sfomuseum/go-http-fault/v2
 # github.com/whosonfirst/go-sanitize v0.1.0
+## explicit; go 1.12
 github.com/whosonfirst/go-sanitize
-# golang.org/x/net v0.0.0-20220617184016-355a448f1bc9
-## explicit
+# golang.org/x/net v0.1.0
+## explicit; go 1.17
 golang.org/x/net/html
 golang.org/x/net/html/atom

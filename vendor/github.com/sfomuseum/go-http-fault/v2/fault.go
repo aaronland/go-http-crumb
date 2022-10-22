@@ -21,13 +21,15 @@ type FaultHandlerVars struct {
 }
 
 // AssignError assigns 'err' and 'status' the `ErrorKey` and `StatusKey` values of 'req.Context'
-// and returns an updated instance of 'req'
-func AssignError(req *http.Request, err error, status int) *http.Request {
+// and updates 'req' in place.
+func AssignError(req *http.Request, err error, status int) {
 
 	ctx := req.Context()
 	ctx = context.WithValue(ctx, ErrorKey, err)
 	ctx = context.WithValue(ctx, StatusKey, status)
-	return req.WithContext(ctx)
+
+	new_req := req.WithContext(ctx)
+	*req = *new_req
 }
 
 // RetrieveError returns the values of the `StatusKey` and `ErrorKey` values of 'req.Context'

@@ -12,7 +12,7 @@ Go package providing a `net/http` handler for logging errors and rendering them 
 import (
        "net/http"
        "html/template"
-       "github.com/sfomuseum/go-http-fault"
+       "github.com/sfomuseum/go-http-fault/v2"
        "log"
 )
 
@@ -30,7 +30,7 @@ func ExampleHandler(fault_handler http.Handler) http.Handler {
 		// that will be used for logging errors
 		
 		if err != nil {
-			req = fault.AssignError(req, err, http.StatusInternalServerError)
+			fault.AssignError(req, err, http.StatusInternalServerError)
 			fault_handler.ServeHTTP(rsp, req)
 			return
 		}
