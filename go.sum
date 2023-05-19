@@ -1,5 +1,5 @@
-github.com/aaronland/go-http-rewrite v1.0.1 h1:BWUlr88wN+jQJUGFd5sSl5fysxHlLYN0FB330pRRP+Q=
-github.com/aaronland/go-http-rewrite v1.0.1/go.mod h1:DVpymWnsPZI9P2cmgs6lz2cWiUltfDJ6UNOwuvSXyF0=
+github.com/aaronland/go-http-rewrite v1.1.0 h1:HhsltNyYRnIz2FR+qANZLx2ykiRuNuNK1JgPonKBLHQ=
+github.com/aaronland/go-http-rewrite v1.1.0/go.mod h1:iA9jQBureJrzO6fTzmRLS+fkbAI1Fna71iTb1hP8n3k=
 github.com/aaronland/go-http-sanitize v0.0.6 h1:tlyIm16zOFrn+PfJlBCmTgFV9URwCho2/YlB9iAj8Eg=
 github.com/aaronland/go-http-sanitize v0.0.6/go.mod h1:qUi4rzUPcpMntpUFnHK00yQI5vd/Q7x9MFYwX91/ygI=
 github.com/aaronland/go-roster v1.0.0 h1:FRDGrTqsYySKjWnAhbBGXyeGlI/o5/t9FZYCbUmyQtI=
@@ -10,5 +10,5 @@ github.com/sfomuseum/go-http-fault/v2 v2.0.0 h1:3m0cp09W1spCnyNpswGmN4GZfTOiSYhY
 github.com/sfomuseum/go-http-fault/v2 v2.0.0/go.mod h1:tzkhs60tMYwf+CbcxeOpM8bfmR7Zi3wL2rA1jKgRh4U=
 github.com/whosonfirst/go-sanitize v0.1.0 h1:ygSqCnakwdzH/m8UEa15zXGDsoo5/JJeRkgmAjXZrBU=
 github.com/whosonfirst/go-sanitize v0.1.0/go.mod h1:p/emgbafMM0p5iVAz2XWwecYPl06Tw4Jos9rhTKIrt8=
-golang.org/x/net v0.1.0 h1:hZ/3BUoy5aId7sCpA/Tc5lt8DkFgdVS2onTpJsZ/fl0=
-golang.org/x/net v0.1.0/go.mod h1:Cx3nUiGt4eDBEyega/BKRp+/AlGL8hYe7U9odMt2Cco=
+golang.org/x/net v0.10.0 h1:X2//UzNDwYmtCLn7To6G58Wr6f5ahEAQgKNzv9Y951M=
+golang.org/x/net v0.10.0/go.mod h1:0qNGK6F8kojg2nk9dLZ2mShWaEBan6FAoqfSigmmuDg=

@@ -3,11 +3,12 @@ package crumb
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-roster"
 	"net/http"
 	"net/url"
 	"sort"
 	"strings"
+
+	"github.com/aaronland/go-roster"
 )
 
 // type Crumb is an interface for generating and validating HTTP crumb strings.
@@ -76,6 +77,10 @@ func NewCrumb(ctx context.Context, uri string) (Crumb, error) {
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to derive driver for %s, %w", scheme, err)
+	}
+
+	if i == nil {
+		return nil, fmt.Errorf("Missing initialization func for %s", scheme)
 	}
 
 	f := i.(CrumbInitializeFunc)

@@ -2,14 +2,15 @@ package crumb
 
 import (
 	"fmt"
-	"github.com/aaronland/go-http-rewrite"
-	"github.com/aaronland/go-http-sanitize"
-	"github.com/sfomuseum/go-http-fault/v2"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 	"io"
 	"log"
 	go_http "net/http"
+
+	"github.com/aaronland/go-http-rewrite"
+	"github.com/aaronland/go-http-sanitize"
+	"github.com/sfomuseum/go-http-fault/v2"
 )
 
 // EnsureCrumbHandler wraps 'next_handler' with a middleware `http.Handler` for assigning and validating
