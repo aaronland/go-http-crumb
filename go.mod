@@ -8,7 +8,7 @@ require (
 	github.com/aaronland/go-roster v1.0.0
 	github.com/aaronland/go-string v1.0.0
 	github.com/sfomuseum/go-http-fault/v2 v2.0.0
-	golang.org/x/net v0.10.0
+	golang.org/x/net v0.17.0
 )
 
 require github.com/whosonfirst/go-sanitize v0.1.0 // indirect
