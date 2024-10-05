@@ -36,7 +36,13 @@ func (fw *FaultWrapper) HandleWithMux(mux *http.ServeMux, uri string, h http.Han
 // using 't' and 'l'.
 func TemplatedFaultHandlerWrapper(l *log.Logger, t *template.Template, h http.Handler) http.Handler {
 
-	fh := faultHandler(l, t)
+	opts := &FaultHandlerOptions{
+		Logger:   l,
+		Template: t,
+		VarsFunc: defaultFaultHandlerVars,
+	}
+
+	fh := FaultHandlerWithOptions(opts)
 
 	fn := func(rsp http.ResponseWriter, req *http.Request) {
 

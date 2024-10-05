@@ -5,7 +5,7 @@ import (
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 	"io"
-	"log"
+	"log/slog"
 	go_http "net/http"
 
 	"github.com/aaronland/go-http-rewrite"
@@ -18,8 +18,10 @@ import (
 // trigger the error handler can be retrieved using `sfomuseum/go-http-fault/v2.RetrieveError()`.
 func EnsureCrumbHandler(cr Crumb, next_handler go_http.Handler) go_http.Handler {
 
-	logger := log.Default()
-	fault_handler := fault.FaultHandler(logger)
+	logger := slog.Default()
+	fault_logger := slog.NewLogLogger(logger.Handler(), slog.LevelError)
+
+	fault_handler := fault.FaultHandler(fault_logger)
 	return EnsureCrumbHandlerWithErrorHandler(cr, next_handler, fault_handler)
 }
 
@@ -158,6 +160,8 @@ func EnsureCrumbHandlerWithErrorHandler(cr Crumb, next_handler go_http.Handler, 
 		rewrite_func := NewCrumbRewriteFunc(crumb_var)
 		rewrite_handler := rewrite.RewriteHTMLHandler(next_handler, rewrite_func)
 
+		logger := slog.Default()
+		logger.Debug("OMGWTF", "h", rewrite_handler, "f", rewrite_func)
 		rewrite_handler.ServeHTTP(rsp, req)
 
 	}

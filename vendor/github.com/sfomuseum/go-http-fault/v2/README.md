@@ -12,8 +12,9 @@ Go package providing a `net/http` handler for logging errors and rendering them 
 import (
        "net/http"
        "html/template"
-       "github.com/sfomuseum/go-http-fault/v2"
        "log"
+
+       "github.com/sfomuseum/go-http-fault/v2"
 )
 
 // Create a custom HTTP handler specific to your application that accepts a `fault.FaultHandler` instance
@@ -67,4 +68,43 @@ func main() {
 	mux.Handle("/", handler)
 
 	http.ListenAndServer(":8080", mux)
+```
+
+If you need to pass custom variables to a custom template you will need to take a few more steps. First, define a callback function that conforms to `fault.FaultHandlerVarsFunc`. Although the method signature says these callback functions only need to return an `interface{}` in actual fact you'll need to return a) a struct b) a pointer to that struct and c) ensure that struct conforms to the `fault.FaultHandlerVars` struct. For example:
+
+```
+type CustomVars struct {
+     SomeOtherVariable string
+     fault.FaultHandlerVars     
+}
+
+var custom_vars_func := func() interface{} {
+
+    return &CustomVars{
+    	SomeOtherVariable: "Hello world",
+    }	
+}
+```
+
+Note that `CustomVars` will be assigned `Status` and `Error` properties, which are an `int` and and `error` respectively, at runtime. If you assign your own values they will be overwritten.
+
+Next create a `FaultHandlerOptions` instance which references your custom variable callback function, a `log.Logger` instance for feedback and debugging and a `html/template.Template` instance to be rendered by the fault handler. For example:
+
+```
+logger := log.Default()
+
+tpl := template.New("test")
+tpl, _ := tpl.Parse(`{{ .SomeOtherVariable }} {{ .Status }}`)
+
+opts := &fault.FaultHandlerOptions{
+	Logger:   logger,
+	Template: tpl,
+	VarsFunc: custom_vars_func,
+}
+```
+
+Finally create the fault handler using the `FaultHandlerWithOptions` method. For example:
+
+```
+handler := fault.FaultHandlerWithOptions(opts)
 ```
