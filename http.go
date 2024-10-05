@@ -160,9 +160,7 @@ func EnsureCrumbHandlerWithErrorHandler(cr Crumb, next_handler go_http.Handler, 
 		rewrite_func := NewCrumbRewriteFunc(crumb_var)
 		rewrite_handler := rewrite.RewriteHTMLHandler(next_handler, rewrite_func)
 
-		logger := slog.Default()
 		rewrite_handler.ServeHTTP(rsp, req)
-
 	}
 
 	h := go_http.HandlerFunc(fn)
