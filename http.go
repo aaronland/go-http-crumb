@@ -161,7 +161,6 @@ func EnsureCrumbHandlerWithErrorHandler(cr Crumb, next_handler go_http.Handler, 
 		rewrite_handler := rewrite.RewriteHTMLHandler(next_handler, rewrite_func)
 
 		logger := slog.Default()
-		logger.Debug("OMGWTF", "h", rewrite_handler, "f", rewrite_func)
 		rewrite_handler.ServeHTTP(rsp, req)
 
 	}
